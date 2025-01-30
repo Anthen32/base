@@ -38,9 +38,7 @@ const Container = styled.div`
 
 const AprWrapper = styled.div`
   min-width: 60px;
-  text-align: center;
-  color: #f09553;
-  font-size:13px;
+  text-align: left;
 `
 
 const Apr: React.FC<AprProps> = ({
@@ -60,7 +58,9 @@ const Apr: React.FC<AprProps> = ({
   return (
     <Container>
       <AprWrapper>{displayApr}</AprWrapper>
-
+      {!hideButton && (
+        <ApyButton lpLabel={lpLabel} cakePrice={cakePrice} apy={originalValue} addLiquidityUrl={addLiquidityUrl} />
+      )}
     </Container>
   )
 }

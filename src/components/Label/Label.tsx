@@ -12,7 +12,7 @@ const Label: React.FC<LabelProps> = ({ text, isFinished = false }) => (
 
 const StyledLabel = styled.div<{ isFinished: boolean }>`
   color: ${({ isFinished, theme }) => theme.colors[isFinished ? 'textDisabled' : 'primary']};
-  font-size: 12px;
+  font-size: 14px;
 `
 
 export default Label

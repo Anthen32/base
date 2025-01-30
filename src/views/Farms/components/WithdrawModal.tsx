@@ -1,39 +1,25 @@
 import BigNumber from 'bignumber.js'
 import React, { useCallback, useMemo, useState } from 'react'
-import { Button, AutoRenewIcon } from '@pancakeswap-libs/uikit'
-import { useToast } from 'state/hooks'
+import { Button, Modal } from '@pancakeswap-libs/uikit'
 import ModalActions from 'components/ModalActions'
 import ModalInput from 'components/ModalInput'
 import useI18n from 'hooks/useI18n'
 import { getFullDisplayBalance } from 'utils/formatBalance'
-import Tooltip from './Tooltip/Tooltip'
 
 interface WithdrawModalProps {
-  isTokenOnly: boolean
   max: BigNumber
-  onConfirm: (amount: string, decimals: number) => void
+  onConfirm: (amount: string) => void
   onDismiss?: () => void
   tokenName?: string
-  tokenDecimals?: number
-  addLiquidityUrl?: string
 }
 
-const WithdrawModal: React.FC<WithdrawModalProps> = ({
-  isTokenOnly,
-  onConfirm,
-  onDismiss,
-  max,
-  tokenName = '',
-  tokenDecimals = 18,
-  addLiquidityUrl,
-}) => {
+const WithdrawModal: React.FC<WithdrawModalProps> = ({ onConfirm, onDismiss, max, tokenName = '' }) => {
   const [val, setVal] = useState('')
   const [pendingTx, setPendingTx] = useState(false)
   const TranslateString = useI18n()
-  const harvestbalance = val.toLocaleString()
   const fullBalance = useMemo(() => {
-    return getFullDisplayBalance(max, isTokenOnly ? tokenDecimals : undefined)
-  }, [max, isTokenOnly, tokenDecimals])
+    return getFullDisplayBalance(max)
+  }, [max])
 
   const handleChange = useCallback(
     (e: React.FormEvent<HTMLInputElement>) => {
@@ -41,49 +27,39 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({
     },
     [setVal],
   )
-  const { toastSuccess, toastError } = useToast()
 
   const handleSelectMax = useCallback(() => {
     setVal(fullBalance)
   }, [fullBalance, setVal])
 
-
-  const unstakeFarms = useCallback(async () => {
-    setPendingTx(true)
-    try {
-      await onConfirm(val, isTokenOnly ? tokenDecimals : undefined)
-      toastSuccess('Done', `Your withdraw ${val} ${tokenName}.`)
-    }catch (e) {
-      console.error(e)
-      toastError('Error', e?.message)
-      // TODO: find a way to handle when the user rejects transaction or it fails
-    } finally {
-      setPendingTx(false)
-    }
-  }, [onConfirm,toastSuccess,toastError,tokenName, val, isTokenOnly,tokenDecimals])
-
   return (
-    <div>
+    <Modal title={TranslateString(1126, 'Unstake LP tokens')} onDismiss={onDismiss}>
       <ModalInput
         onSelectMax={handleSelectMax}
         onChange={handleChange}
         value={val}
         max={fullBalance}
         symbol={tokenName}
-        addLiquidityUrl={addLiquidityUrl}
+        inputTitle={TranslateString(588, 'Unstake')}
       />
       <ModalActions>
-          <Button
-          mt="1px"
-            disabled={pendingTx || new BigNumber(val).isNaN() || new BigNumber(val).isLessThanOrEqualTo(0)}
-            endIcon={pendingTx ? <AutoRenewIcon spin color="currentColor" /> : null}
-            onClick={unstakeFarms}
-            width="100%"
-          >
-            {pendingTx ? TranslateString(488, '') : TranslateString(464, 'Withdraw to Wallet')}
-          </Button>
+        <Button variant="secondary" onClick={onDismiss} width="100%">
+          {TranslateString(462, 'Cancel')}
+        </Button>
+        <Button
+          disabled={pendingTx}
+          onClick={async () => {
+            setPendingTx(true)
+            await onConfirm(val)
+            setPendingTx(false)
+            onDismiss()
+          }}
+          width="100%"
+        >
+          {pendingTx ? TranslateString(488, 'Pending Confirmation') : TranslateString(464, 'Confirm')}
+        </Button>
       </ModalActions>
-    </div>
+    </Modal>
   )
 }
 

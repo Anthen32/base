@@ -14,11 +14,13 @@ const Providers: React.FC = ({ children }) => {
     <Web3ReactProvider getLibrary={getLibrary}>
       <Provider store={store}>
         <ThemeContextProvider>
+          <LanguageContextProvider>
             <BlockContextProvider>
               <RefreshContextProvider>
                 <ModalProvider>{children}</ModalProvider>
               </RefreshContextProvider>
             </BlockContextProvider>
+          </LanguageContextProvider>
         </ThemeContextProvider>
       </Provider>
     </Web3ReactProvider>

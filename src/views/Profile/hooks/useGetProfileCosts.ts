@@ -28,7 +28,7 @@ const useGetProfileCosts = () => {
           numberCakeToUpdate: new BigNumber(numberCakeToUpdate as string),
         })
       } catch (error) {
-        toastError('Error', 'Could not retrieve KYRIOS costs for profile')
+        toastError('Error', 'Could not retrieve CAKE costs for profile')
       }
     }
 

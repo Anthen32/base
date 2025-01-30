@@ -1,6 +1,5 @@
 import React, { useRef } from 'react'
 import styled from 'styled-components'
-import QueueAnim from 'rc-queue-anim'
 import { useTable, Button, ChevronUpIcon, ColumnType } from '@pancakeswap-libs/uikit'
 import useI18n from 'hooks/useI18n'
 
@@ -15,8 +14,9 @@ export interface ITableProps {
 const Container = styled.div`
   filter: ${({ theme }) => theme.card.dropShadow};
   width: 100%;
-  border-radius: 0.6rem;
-  margin: 0;
+  background: ${({ theme }) => theme.card.background};
+  border-radius: 16px;
+  margin: 16px 0px;
 `
 
 const TableWrapper = styled.div`
@@ -28,9 +28,8 @@ const TableWrapper = styled.div`
 `
 
 const StyledTable = styled.table`
-  border-collapse: separate;
-  border-spacing: 0px 14px;
-  font-size: 15px;
+  border-collapse: collapse;
+  font-size: 14px;
   border-radius: 4px;
   margin-left: auto;
   margin-right: auto;
@@ -39,25 +38,9 @@ const StyledTable = styled.table`
 
 const TableBody = styled.tbody`
   & tr {
-    background: #1c1b1c;
-
     td {
-      font-size: 15px;
+      font-size: 16px;
       vertical-align: middle;
-      border-top: 1px solid #3d2f23;
-      border-bottom: 1px solid #3d2f23;
-    }
-    td:first-child {
-      border-left-style: solid;
-      border-top-left-radius: 0.4rem;
-      border-bottom-left-radius: 0.4rem;
-      border-left: 1px solid #3d2f23;
-    }
-    td:last-child {
-      border-right-style: transparent;
-      border-bottom-right-radius: 0.4rem;
-      border-top-right-radius: 0.4rem;
-      border-right: 1px solid #3d2f23;
     }
   }
 `
@@ -88,29 +71,25 @@ const FarmTable: React.FC<ITableProps> = (props) => {
   }
 
   return (
-    <QueueAnim type="alpha" delay={40} duration={500}>
-      <div key="1">
-        <Container>
-          <TableContainer>
-            <TableWrapper ref={tableWrapperEl}>
-              <StyledTable>
-                <TableBody>
-                  {rows.map((row) => {
-                    return <Row {...row.original} key={`table-row-${row.id}`} />
-                  })}
-                </TableBody>
-              </StyledTable>
-            </TableWrapper>
-            <ScrollButtonContainer>
-              <Button variant="text" onClick={scrollToTop}>
-                {TranslateString(999, 'TOP')}
-                <ChevronUpIcon color="primary" />
-              </Button>
-            </ScrollButtonContainer>
-          </TableContainer>
-        </Container>
-      </div>
-    </QueueAnim>
+    <Container>
+      <TableContainer>
+        <TableWrapper ref={tableWrapperEl}>
+          <StyledTable>
+            <TableBody>
+              {rows.map((row) => {
+                return <Row {...row.original} key={`table-row-${row.id}`} />
+              })}
+            </TableBody>
+          </StyledTable>
+        </TableWrapper>
+        <ScrollButtonContainer>
+          <Button variant="text" onClick={scrollToTop}>
+            {TranslateString(999, 'To Top')}
+            <ChevronUpIcon color="primary" />
+          </Button>
+        </ScrollButtonContainer>
+      </TableContainer>
+    </Container>
   )
 }
 

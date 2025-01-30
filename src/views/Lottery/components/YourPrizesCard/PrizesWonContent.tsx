@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react'
 import styled from 'styled-components'
-import { Button, Heading, useModal } from '@pancakeswap-libs/uikit'
+import { Button, Heading, Won, useModal } from '@pancakeswap-libs/uikit'
 import useI18n from 'hooks/useI18n'
 import { getBalanceNumber } from 'utils/formatBalance'
 import { useMultiClaimLottery } from 'hooks/useBuyLottery'
@@ -11,6 +11,15 @@ import MyTicketsModal from '../TicketCard/UserTicketsModal'
 const WinningsWrapper = styled.div`
   display: flex;
   align-items: baseline;
+`
+
+const IconWrapper = styled.div`
+  margin-bottom: 16px;
+
+  svg {
+    width: 80px;
+    height: 80px;
+  }
 `
 
 const StyledCardActions = styled.div`
@@ -54,6 +63,9 @@ const PrizesWonContent: React.FC = () => {
 
   return (
     <StyledCardContentInner>
+      <IconWrapper>
+        <Won />
+      </IconWrapper>
       <Heading as="h3" size="lg" color="secondary">
         {TranslateString(660, 'You won!')}
       </Heading>
@@ -65,7 +77,7 @@ const PrizesWonContent: React.FC = () => {
               {winnings}
             </Heading>
             <Heading as="h4" size="lg">
-              KYRIOS
+              CAKE
             </Heading>
           </WinningsWrapper>
         </>

@@ -1,64 +1,59 @@
 import React from 'react'
 import styled from 'styled-components'
+import { useFarmUser } from 'state/hooks'
+import useI18n from 'hooks/useI18n'
 import { Text, Image } from '@pancakeswap-libs/uikit'
-import Multiplier from './Multiplier'
+import { getBalanceNumber } from 'utils/formatBalance'
 
 export interface FarmProps {
   label: string
   pid: number
   image: string
-  imagetwo: string
-  otherExchange: string
-  isTokenOnly: string
-  multiplier: string
 }
 
 const IconImage = styled(Image)`
-  width: 38px;
+  width: 24px;
+  height: 24px;
 
-  img {
-    border-radius: 20%;
+  ${({ theme }) => theme.mediaQueries.sm} {
+    width: 40px;
+    height: 40px;
   }
 `
 
 const Container = styled.div`
-  padding-left: 10px;
+  padding-left: 16px;
   display: flex;
   align-items: center;
 
   ${({ theme }) => theme.mediaQueries.sm} {
-    padding-left: 42px;
+    padding-left: 32px;
   }
 `
 
-const Farm: React.FunctionComponent<FarmProps> = ({
-  image,
-  imagetwo,
-  label,
-  isTokenOnly,
-  otherExchange,
-  multiplier,
-}) => {
+const Farm: React.FunctionComponent<FarmProps> = ({ image, label, pid }) => {
+  const { stakedBalance } = useFarmUser(pid)
+  const TranslateString = useI18n()
+  const rawStakedBalance = getBalanceNumber(stakedBalance)
+
   const handleRenderFarming = (): JSX.Element => {
-    if (otherExchange) {
+    if (rawStakedBalance) {
       return (
-        <Text color="#FFF" fontSize="14px">
-          {label}
+        <Text color="secondary" fontSize="12px" bold>
+          {TranslateString(999, 'FARMING')}
         </Text>
       )
     }
+
     return null
   }
 
   return (
     <Container>
-      {isTokenOnly ? '' : <IconImage src={`/ico/${image}.jpg`} alt={image} width={38} height={38} mr="-10px" />}
-      <IconImage src={`/ico/${imagetwo}.jpg`} alt={imagetwo} width={38} height={38} ml="-5px" mr="10px" />
+      <IconImage src={`/images/farms/${image}.svg`} alt="icon" width={40} height={40} mr="8px" />
       <div>
         {handleRenderFarming()}
-        <Text textTransform="uppercase" color="#7f7f7f" fontSize="11px">
-          {otherExchange}
-        </Text>{' '}
+        <Text bold>{label}</Text>
       </div>
     </Container>
   )

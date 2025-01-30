@@ -8,17 +8,15 @@ import Balance from 'components/Balance'
 import { CommunityTag, CoreTag, BinanceTag } from 'components/Tags'
 import useBlock from 'hooks/useBlock'
 import { PoolCategory } from 'config/constants/types'
-import { Flex } from '@pancakeswap-libs/uikit'
 
 const tags = {
   [PoolCategory.BINANCE]: BinanceTag,
   [PoolCategory.CORE]: CoreTag,
-  [PoolCategory.EARN]: CommunityTag,
+  [PoolCategory.COMMUNITY]: CommunityTag,
 }
 
 interface Props {
   projectLink: string
-  projectScan: string
   decimals: number
   totalStaked: BigNumber
   startBlock: number
@@ -28,36 +26,56 @@ interface Props {
 }
 
 const StyledFooter = styled.div<{ isFinished: boolean }>`
-  background: #bed5ff0d;
-  border-radius: 0.4rem;
-  padding: 16px;
-  margin-left: 40px;
-  margin-right: 40px;
-  margin-bottom: 20px;
+  border-top: 1px solid ${({ theme }) => (theme.isDark ? '#524B63' : '#E9EAEB')};
+  color: ${({ isFinished, theme }) => theme.colors[isFinished ? 'textDisabled2' : 'primary2']};
+  padding: 24px;
+`
+
+const StyledDetailsButton = styled.button`
+  align-items: center;
+  background-color: transparent;
+  border: 0;
+  color: ${(props) => props.theme.colors.primary};
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 16px;
+  font-weight: 600;
+  height: 32px;
+  justify-content: center;
+  outline: 0;
+  padding: 0;
+  &:hover {
+    opacity: 0.9;
+  }
+
+  & > svg {
+    margin-left: 4px;
+  }
 `
 
 const Details = styled.div`
-  margin-top: 4px;
-  padding: 8px;
+  margin-top: 24px;
 `
 
 const Row = styled.div`
   align-items: center;
   display: flex;
 `
+
+const FlexFull = styled.div`
+  flex: 1;
+`
 const Label = styled.div`
-  color: #cf783d;
-  font-size: 13px;
+  font-size: 14px;
 `
 const TokenLink = styled.a`
-  font-size: 13px;
+  font-size: 14px;
   text-decoration: none;
-  color: #7f7f7f;
+  color: #12aab5;
 `
 
 const CardFooter: React.FC<Props> = ({
   projectLink,
-  projectScan,
   decimals,
   totalStaked,
   isFinished,
@@ -78,38 +96,48 @@ const CardFooter: React.FC<Props> = ({
 
   return (
     <StyledFooter isFinished={isFinished}>
-      <Details>
-        <Flex justifyContent="space-between">
-          <Label>Total Staked:</Label>
-          <Balance fontSize="12px" isDisabled={isFinished} value={getBalanceNumber(totalStaked, decimals)} />
-        </Flex>
-        <Flex justifyContent="space-between">
-          <Label>Current Block:</Label>
-          <Balance fontSize="12px" isDisabled={isFinished} value={block} decimals={0} />
-        </Flex>
-        {blocksUntilStart > 0 && (
-          <Flex justifyContent="space-between">
-            <Label>Rewards Start (Blocks):</Label>
-            <Balance fontSize="12px" isDisabled={isFinished} value={blocksUntilStart} decimals={0} />
-          </Flex>
-        )}
-        {blocksUntilStart === 0 && blocksRemaining > 0 && (
-          <Flex justifyContent="space-between">
-            <Label>Rewards End (Blocks):</Label>
-            <Balance fontSize="12px" isDisabled={isFinished} value={blocksRemaining} decimals={0} />
-          </Flex>
-        )}
-        <Flex mt="0px" justifyContent="space-between">
-          <TokenLink href={projectScan} target="_blank">
-            {TranslateString(412, 'View on Explorer')}
+      <Row>
+        <FlexFull>
+          <Tag />
+        </FlexFull>
+        <StyledDetailsButton onClick={handleClick}>
+          {isOpen ? TranslateString(1066, 'Hide') : TranslateString(658, 'Details')} <Icon />
+        </StyledDetailsButton>
+      </Row>
+      {isOpen && (
+        <Details>
+          <Row style={{ marginBottom: '4px' }}>
+            <FlexFull>
+              <Label>
+                <span role="img" aria-label="syrup">
+                  🥞{' '}
+                </span>
+                {TranslateString(408, 'Total')}
+              </Label>
+            </FlexFull>
+            <Balance fontSize="14px" isDisabled={isFinished} value={getBalanceNumber(totalStaked, decimals)} />
+          </Row>
+          {blocksUntilStart > 0 && (
+            <Row>
+              <FlexFull>
+                <Label>{TranslateString(410, 'Start')}:</Label>
+              </FlexFull>
+              <Balance fontSize="14px" isDisabled={isFinished} value={blocksUntilStart} decimals={0} />
+            </Row>
+          )}
+          {blocksUntilStart === 0 && blocksRemaining > 0 && (
+            <Row>
+              <FlexFull>
+                <Label>{TranslateString(410, 'End')}:</Label>
+              </FlexFull>
+              <Balance fontSize="14px" isDisabled={isFinished} value={blocksRemaining} decimals={0} />
+            </Row>
+          )}
+          <TokenLink href={projectLink} target="_blank">
+            {TranslateString(412, 'View project site')}
           </TokenLink>
-        </Flex>
-        <Flex mt="4px" justifyContent="space-between">
-        <TokenLink href={projectLink} target="_blank">
-            {TranslateString(412, 'Spooky Info')}
-          </TokenLink>
-          </Flex>
-      </Details>
+        </Details>
+      )}
     </StyledFooter>
   )
 }

@@ -6,9 +6,9 @@ export interface TooltipProps {
 }
 
 const TooltipContent = styled.div`
-  background: #2d323c;
+  background: ${({ theme }) => theme.tooltip.background};
   padding: 16px;
-  border-radius: 3px;
+  border-radius: 16px;
   color: ${({ theme }) => theme.tooltip.text};
   width: max-content;
   display: none;
@@ -20,7 +20,6 @@ const TooltipContent = styled.div`
   transform: translate(34px, 0);
   right: 0;
   max-width: 246px;
-  font-size:12px;
 
   &:after {
     content: '';
@@ -29,7 +28,7 @@ const TooltipContent = styled.div`
     height: 0;
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;
-    border-top: 10px solid #2d323c;
+    border-top: 10px solid ${({ theme }) => theme.tooltip.background};
     bottom: 0;
     position: absolute;
     transform: translate(-34px, 9px);

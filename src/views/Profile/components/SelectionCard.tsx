@@ -13,7 +13,7 @@ interface SelectionCardProps {
 
 const StyledCard = styled(Card)`
   ${({ isSuccess }) => !isSuccess && 'box-shadow: none;'}
-  border-radius: 3px;
+  border-radius: 16px;
   margin-bottom: 16px;
 `
 
@@ -28,7 +28,7 @@ const Label = styled.label<{ isDisabled: boolean }>`
 const Body = styled.div`
   align-items: center;
   border: 2px solid ${({ theme }) => theme.colors.tertiary};
-  border-radius: 3px 0 0 16px;
+  border-radius: 16px 0 0 16px;
   display: flex;
   flex-grow: 1;
   height: 80px;

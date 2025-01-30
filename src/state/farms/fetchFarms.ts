@@ -2,32 +2,29 @@ import BigNumber from 'bignumber.js'
 import erc20 from 'config/abi/erc20.json'
 import masterchefABI from 'config/abi/masterchef.json'
 import multicall from 'utils/multicall'
-import { getMasterChefAddress } from 'utils/addressHelpers'
+import { getAddress, getMasterChefAddress } from 'utils/addressHelpers'
 import farmsConfig from 'config/constants/farms'
-import { QuoteToken } from '../../config/constants/types'
-
-const CHAIN_ID = process.env.REACT_APP_CHAIN_ID
 
 const fetchFarms = async () => {
   const data = await Promise.all(
     farmsConfig.map(async (farmConfig) => {
-      const lpAdress = farmConfig.lpAddresses[CHAIN_ID]
+      const lpAdress = getAddress(farmConfig.lpAddresses)
       const calls = [
         // Balance of token in the LP contract
         {
-          address: farmConfig.tokenAddresses[CHAIN_ID],
+          address: getAddress(farmConfig.tokenAddresses),
           name: 'balanceOf',
           params: [lpAdress],
         },
         // Balance of quote token on LP contract
         {
-          address: farmConfig.quoteTokenAdresses[CHAIN_ID],
+          address: getAddress(farmConfig.quoteTokenAdresses),
           name: 'balanceOf',
           params: [lpAdress],
         },
         // Balance of LP tokens in the master chef contract
         {
-          address: farmConfig.isTokenOnly ? farmConfig.tokenAddresses[CHAIN_ID] : lpAdress,
+          address: lpAdress,
           name: 'balanceOf',
           params: [getMasterChefAddress()],
         },
@@ -38,67 +35,41 @@ const fetchFarms = async () => {
         },
         // Token decimals
         {
-          address: farmConfig.tokenAddresses[CHAIN_ID],
+          address: getAddress(farmConfig.tokenAddresses),
           name: 'decimals',
         },
         // Quote token decimals
         {
-          address: farmConfig.quoteTokenAdresses[CHAIN_ID],
+          address: getAddress(farmConfig.quoteTokenAdresses),
           name: 'decimals',
         },
       ]
 
       const [
         tokenBalanceLP,
-        quoteTokenBalanceLP,
+        quoteTokenBlanceLP,
         lpTokenBalanceMC,
         lpTotalSupply,
         tokenDecimals,
-        quoteTokenDecimals
+        quoteTokenDecimals,
       ] = await multicall(erc20, calls)
 
+      // Ratio in % a LP tokens that are in staking, vs the total number in circulation
+      const lpTokenRatio = new BigNumber(lpTokenBalanceMC).div(new BigNumber(lpTotalSupply))
 
-      let tokenAmount;
-      let lpTotalInQuoteToken;
-      let lpStakedTotal;
-      let tokenPriceVsQuote;
-      if(farmConfig.isTokenOnly){
-        tokenAmount = new BigNumber(lpTokenBalanceMC).div(new BigNumber(10).pow(tokenDecimals));
+      // Total value in staking in quote token value
+      const lpTotalInQuoteToken = new BigNumber(quoteTokenBlanceLP)
+        .div(new BigNumber(10).pow(18))
+        .times(new BigNumber(2))
+        .times(lpTokenRatio)
 
-        if(farmConfig.tokenSymbol === QuoteToken.USDT && farmConfig.quoteTokenSymbol === QuoteToken.USDT){
-          tokenPriceVsQuote = new BigNumber(1);
-        }else{
-          tokenPriceVsQuote = new BigNumber(quoteTokenBalanceLP).div(new BigNumber(10).pow(quoteTokenDecimals)).div(new BigNumber(tokenBalanceLP).div(new BigNumber(10).pow(tokenDecimals)));
-        }
-        lpTotalInQuoteToken = tokenAmount.times(tokenPriceVsQuote);
-        lpStakedTotal = tokenAmount;
-      }
-      else {
-        // Ratio in % a LP tokens that are in staking, vs the total number in circulation
-        const lpTokenRatio = new BigNumber(lpTokenBalanceMC).div(new BigNumber(lpTotalSupply))
+      // Amount of token in the LP that are considered staking (i.e amount of token * lp ratio)
+      const tokenAmount = new BigNumber(tokenBalanceLP).div(new BigNumber(10).pow(tokenDecimals)).times(lpTokenRatio)
+      const quoteTokenAmount = new BigNumber(quoteTokenBlanceLP)
+        .div(new BigNumber(10).pow(quoteTokenDecimals))
+        .times(lpTokenRatio)
 
-        // Total value in staking in quote token value
-        lpTotalInQuoteToken = new BigNumber(quoteTokenBalanceLP)
-          .div(new BigNumber(10).pow(quoteTokenDecimals))
-          .times(new BigNumber(2))
-          .times(lpTokenRatio)
-
-        // Amount of token in the LP that are considered staking (i.e amount of token * lp ratio)
-        tokenAmount = new BigNumber(tokenBalanceLP).div(new BigNumber(10).pow(tokenDecimals)).times(lpTokenRatio)
-        const quoteTokenAmount = new BigNumber(quoteTokenBalanceLP)
-          .div(new BigNumber(10).pow(quoteTokenDecimals))
-          .times(lpTokenRatio)
-
-        if(tokenAmount.comparedTo(0) > 0){
-          tokenPriceVsQuote = quoteTokenAmount.div(tokenAmount);
-        } else{
-          tokenPriceVsQuote = new BigNumber(quoteTokenBalanceLP).div(new BigNumber(tokenBalanceLP)).times(new BigNumber(10).pow(tokenDecimals - quoteTokenDecimals));
-        }
-        lpStakedTotal = new BigNumber(lpTokenBalanceMC).div(new BigNumber(10).pow(quoteTokenDecimals))        
-      }
-
-
-      const [info, totalAllocPoint, cakePerBlock] = await multicall(masterchefABI, [
+      const [info, totalAllocPoint] = await multicall(masterchefABI, [
         {
           address: getMasterChefAddress(),
           name: 'poolInfo',
@@ -108,29 +79,19 @@ const fetchFarms = async () => {
           address: getMasterChefAddress(),
           name: 'totalAllocPoint',
         },
-        {
-          address: getMasterChefAddress(),
-          name: 'KyriosPerBlock',
-        },
       ])
 
       const allocPoint = new BigNumber(info.allocPoint._hex)
       const poolWeight = allocPoint.div(new BigNumber(totalAllocPoint))
-      const depositFeeBP = new BigNumber(info.depositFeeBP)
 
       return {
         ...farmConfig,
         tokenAmount: tokenAmount.toJSON(),
-        // quoteTokenAmount: quoteTokenAmount,
+        quoteTokenAmount: quoteTokenAmount.toJSON(),
         lpTotalInQuoteToken: lpTotalInQuoteToken.toJSON(),
-        tokenPriceVsQuote: tokenPriceVsQuote.toJSON(),
-        poolWeight: poolWeight.toNumber(),
+        tokenPriceVsQuote: quoteTokenAmount.div(tokenAmount).toJSON(),
+        poolWeight: poolWeight.toJSON(),
         multiplier: `${allocPoint.div(100).toString()}X`,
-        depositFeeBP: depositFeeBP.div(100).toString(),
-        cakePerBlock: new BigNumber(cakePerBlock).toNumber(),
-        lpStakedTotal: lpStakedTotal.toJSON(),
-        tokenDecimals: new BigNumber(tokenDecimals).toNumber(),
-        quoteTokenDecimals: new BigNumber(quoteTokenDecimals).toNumber(),
       }
     }),
   )

@@ -15,7 +15,7 @@ const FarmTabButtons = () => {
           {TranslateString(698, 'Active')}
         </ButtonMenuItem>
         <ButtonMenuItem as={Link} to={`${url}/history`}>
-          {TranslateString(700, 'Retired')}
+          {TranslateString(700, 'Inactive')}
         </ButtonMenuItem>
       </ButtonMenu>
     </Wrapper>

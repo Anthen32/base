@@ -3,30 +3,15 @@ import { Input } from '@pancakeswap-libs/uikit'
 import styled from 'styled-components'
 
 const StyledInput = styled(Input)`
-  border-radius: 2px;
+  border-radius: 16px;
   margin-left: auto;
-  font-size:13px;
-  background: #1c1b1c;
-  border: 1px solid rgb(61 47 35);
-  height: 38px;
-  color: #fff;
-  border-radius: 0.4rem;
-  
-  ::placeholder,
-  ::-webkit-input-placeholder {
-    color: #cf783d;
-  }
-  :-ms-input-placeholder {
-     color: #cf783d;
-  }
 `
+
 const InputWrapper = styled.div`
   position: relative;
-  
   ${({ theme }) => theme.mediaQueries.sm} {
     width: 234px;
     display: block;
-    font-size:13px;
   }
 `
 
@@ -48,7 +33,7 @@ const SearchInput: React.FC<Props> = ({ value, onChange }) => {
           ref={inputEl}
           value={value}
           onChange={onChange}
-          placeholder="Search..."
+          placeholder="Search farms"
           onBlur={() => setToggled(false)}
         />
       </InputWrapper>

@@ -39,44 +39,44 @@ const WinningNumbers: React.FC = () => {
             <RabbitRow>
               <RabbitBox>
                 <CardImageFirst>
-                  <Image src="/images/sign bunny 1@2x.png" alt="Number 1" width={200} height={150} />
+                  <Image src="/images/sign bunny 1@2x.png" alt="Number 1" width={200} height={150} responsive />
                 </CardImageFirst>
               </RabbitBox>
               <RabbitBox>
                 <CardImage style={{ marginLeft: '-1.2em' }}>
-                  <Image src="/images/sign bunny 2@2x.png" alt="Number 2" width={200} height={150} />
+                  <Image src="/images/sign bunny 2@2x.png" alt="Number 2" width={200} height={150} responsive />
                 </CardImage>
               </RabbitBox>
               <RabbitBox>
                 <CardImage style={{ marginLeft: '-1.2em' }}>
-                  <Image src="/images/sign bunny 3@2x.png" alt="Number 3" width={200} height={150} />
+                  <Image src="/images/sign bunny 3@2x.png" alt="Number 3" width={200} height={150} responsive />
                 </CardImage>
               </RabbitBox>
               <RabbitBox>
                 <CardImage style={{ marginLeft: '-1.2em' }}>
-                  <Image src="/images/sign bunny 4@2x.png" alt="Number 4" width={200} height={150} />
+                  <Image src="/images/sign bunny 4@2x.png" alt="Number 4" width={200} height={150} responsive />
                 </CardImage>
               </RabbitBox>
             </RabbitRow>
             <RabbitRowSmall>
               <RabbitBoxSmall>
                 <CardImageFirst>
-                  <Image src="/images/sign bunny 1@2x.png" alt="Number 1" width={200} height={150} />
+                  <Image src="/images/sign bunny 1@2x.png" alt="Number 1" width={200} height={150} responsive />
                 </CardImageFirst>
               </RabbitBoxSmall>
               <RabbitBoxSmall>
                 <CardImage style={{ marginLeft: '-1.2em' }}>
-                  <Image src="/images/sign bunny 2@2x.png" alt="Number 2" width={200} height={150} />
+                  <Image src="/images/sign bunny 2@2x.png" alt="Number 2" width={200} height={150} responsive />
                 </CardImage>
               </RabbitBoxSmall>
               <RabbitBoxSmall>
                 <CardImage style={{ marginLeft: '-1.2em' }}>
-                  <Image src="/images/sign bunny 3@2x.png" alt="Number 3" width={200} height={150} />
+                  <Image src="/images/sign bunny 3@2x.png" alt="Number 3" width={200} height={150} responsive />
                 </CardImage>
               </RabbitBoxSmall>
               <RabbitBoxSmall>
                 <CardImage style={{ marginLeft: '-1.2em' }}>
-                  <Image src="/images/sign bunny 4@2x.png" alt="Number 4" width={200} height={150} />
+                  <Image src="/images/sign bunny 4@2x.png" alt="Number 4" width={200} height={150} responsive />
                 </CardImage>
               </RabbitBoxSmall>
             </RabbitRowSmall>

@@ -8,18 +8,17 @@ declare module 'styled-components' {
 }
 
 const GlobalStyle = createGlobalStyle`
-* {
-font-family: 'Overpass', sans-serif;
-}
-body {
-  background-image: url(/images/breadcrumbs_bg.png);
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  background-position: top center;
-  background-size: auto;
-  background-color: #151515;
-  text-shadow: 0px 0px 3px #39446d5c;
-}
+  * {
+    font-family: 'Monda', sans-serif;
+  }
+  body {
+    background-color: ${({ theme }) => theme.colors.background};
+
+    img {
+      height: auto;
+      max-width: 100%;
+    }
+  }
 `
 
 export default GlobalStyle

@@ -26,11 +26,11 @@ const HistoryChart: React.FC = () => {
 
   const lineStyles = ({ color }) => {
     return {
+      borderColor: color,
       fill: false,
       borderWidth: 2,
       pointRadius: 0,
       pointHitRadius: 10,
-      fontColor: color,
     }
   }
 

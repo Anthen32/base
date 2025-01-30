@@ -3,133 +3,41 @@ import { Route, useRouteMatch, useLocation } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import BigNumber from 'bignumber.js'
 import { useWeb3React } from '@web3-react/core'
-import { BaseLayout, RowType, Checkbox, Text, Flex } from '@pancakeswap-libs/uikit'
+import { Image, Heading, RowType, Toggle, Text } from '@pancakeswap-libs/uikit'
 import styled from 'styled-components'
-import { BLOCKS_PER_YEAR, KYRIOS_POOL_PID } from 'config'
+import { BLOCKS_PER_YEAR, CAKE_PER_BLOCK, CAKE_POOL_PID } from 'config'
 import FlexLayout from 'components/layout/Flex'
-import Menu from 'components/Menu'
-import '../Home/main.css'
-import QueueAnim from 'rc-queue-anim'
-import Timer from 'views/Home/components/TimerHome'
-
 import Page from 'components/layout/Page'
-import {
-  useFarms,
-  usePriceBnbBusd,
-  usePriceCakeBusd,
-  useTotalValue,
-  usePriceEthBusd,
-  usePriceQuickBusd,
-} from 'state/hooks'
+import { useFarms, usePriceBnbBusd, usePriceCakeBusd, usePriceEthBusd } from 'state/hooks'
 import useRefresh from 'hooks/useRefresh'
 import { fetchFarmUserDataAsync } from 'state/actions'
 import { QuoteToken } from 'config/constants/types'
 import useI18n from 'hooks/useI18n'
-import useBlock from 'hooks/useBlock'
 import { getBalanceNumber } from 'utils/formatBalance'
 import { orderBy } from 'lodash'
-import FarmedStakingBalance from 'views/Home/components/FarmStakingBalance'
 
-import FarmStakingCard from '../Home/components/FarmStakingCard'
-import EarnAssetCard from '../Home/components/EarnAssetCard'
 import FarmCard, { FarmWithStakedValue } from './components/FarmCard/FarmCard'
 import Table from './components/FarmTable/FarmTable'
 import FarmTabButtons from './components/FarmTabButtons'
 import SearchInput from './components/SearchInput'
 import { RowProps } from './components/FarmTable/Row'
+import ToggleView from './components/ToggleView/ToggleView'
 import { DesktopColumnSchema, ViewMode } from './components/types'
 import Select, { OptionProps } from './components/Select/Select'
-import Notification from './components/Anounces'
-import Divider from './components/Divider'
-
-
-const CTACards = styled(BaseLayout)`
-  align-items: start;
-  margin-bottom: 16px;
-  margin-top: 0px;
-  border: 1px solid rgb(61 47 35);
-  background: #1c1b1c;
-  border-radius: 0.4rem;
-
-  & > div {
-    grid-column: span 6;
-  }
-
-  ${({ theme }) => theme.mediaQueries.sm} {
-    & > div {
-      grid-column: span 8;
-    }
-  }
-
-  ${({ theme }) => theme.mediaQueries.lg} {
-    & > div {
-      grid-column: span 4;
-    }
-  }
-`
-const CTACards2 = styled(BaseLayout)`
-  display: flex;
-  width: 100%;
-  align-items: center;
-  position: relative;
-  justify-content: space-between;
-  flex-direction: column;
-
-  img {
-    border-radius: 0.4rem;
-    width: 100%;
-    height: auto;
-  }
-`
-
-const Anounces = styled(BaseLayout)`
-  display: flex;
-  width: 100%;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 15px;
-  margin-top: 0px;
-  background-color: #212629;
-  padding: 5px;
-  a {
-    font-size: 13.2px;
-  }
-`
-
-const Audits = styled.div`
-  width: 100%;
-  text-align: center;
-  display:none;
-  img {
-    margin-left: 20px;
-    margin-right: 20px;
-    height:35px;
-  }
-  @media (max-width: 1450px) {
-    display: inline;
-  }
-}
-`
-const Purple = styled.div`
-  color: #cf783d;
-  display: inline-flex;
-  font-size: 13px;
-  margin-right: 15px;
-`
 
 const ControlContainer = styled.div`
   display: flex;
   width: 100%;
   align-items: center;
   position: relative;
-  margin-top: 50px;
+
   justify-content: space-between;
   flex-direction: column;
 
   ${({ theme }) => theme.mediaQueries.sm} {
     flex-direction: row;
     flex-wrap: wrap;
-    padding: 0px 15px 32px 15px;
+    padding: 16px 32px;
   }
 `
 
@@ -149,38 +57,11 @@ const LabelWrapper = styled.div`
   }
 `
 
-const Head = styled.div`
-  background-color: none;
-  border-radius: 0.4rem;
-  float: left;
-  margin: 10px;
-  text-align: justify;
-  width: 100%;
-`
-const HeadDivider = styled.div`
-  background-image: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0)),
-    linear-gradient(101deg, #ffac49, #d32d29);
-  border-radius: 0.4rem;
-  float: right;
-  width: 42%;
-  height: 4px;
-  margin-top: 130px;
-`
-const HeadDividerLeft = styled.div`
-  background-image: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0)),
-    linear-gradient(101deg, #ffac49, #d32d29);
-  border-radius: 0.4rem;
-  float: left;
-  width: 42%;
-  height: 4px;
-  margin-top: 130px;
-`
 const FilterContainer = styled.div`
   display: flex;
   align-items: center;
   width: 100%;
   padding: 8px 0px;
-  border-radius: 0.4rem;
 
   ${({ theme }) => theme.mediaQueries.sm} {
     width: auto;
@@ -208,57 +89,38 @@ const ViewControls = styled.div`
     }
   }
 `
-const CurrentBlock = styled.div`
-    position: fixed;
-    font-size:11px;
-    font-family:"Tomorrow";
-    display: flex;
-    right: 0px;
-    bottom: 0px;
-    padding: 1rem;
-    transition: opacity 0.25s ease 0s;
-    color: #dcdcdd;
-    z-index:20;
-    img{
-      height:35px;
-    }
 
-@media (max-width: 1450px) {
-        display: none;
-      }
-}
+const StyledImage = styled(Image)`
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 58px;
 `
-const StatusBlock = styled.div`
-width: 8px;
-height: 8px;
-min-height: 8px;
-min-width: 8px;
-margin-left: 0.5rem;
-margin-top: 4px;
-border-radius: 50%;
-position: relative;
-background-color: #dcdcdd;
 
-}
+const Header = styled.div`
+  padding: 32px 0px;
+  background: ${({ theme }) => theme.colors.gradients.bubblegum};
+
+  padding-left: 16px;
+  padding-right: 16px;
+
+  ${({ theme }) => theme.mediaQueries.sm} {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
 `
-export interface FarmsProps {
-  tokenMode?: boolean
-}
 
-const Farms: React.FC<FarmsProps> = (farmsProps) => {
+const Farms: React.FC = () => {
   const { path } = useRouteMatch()
   const { pathname } = useLocation()
   const TranslateString = useI18n()
   const farmsLP = useFarms()
   const cakePrice = usePriceCakeBusd()
   const bnbPrice = usePriceBnbBusd()
-  const ethPriceUsd = usePriceEthBusd()
-  const quickPriceUsd = usePriceQuickBusd()
   const [query, setQuery] = useState('')
-  const [viewMode] = useState(ViewMode.TABLE)
+  const [viewMode, setViewMode] = useState(ViewMode.TABLE)
+  const ethPriceUsd = usePriceEthBusd()
   const { account } = useWeb3React()
   const [sortOption, setSortOption] = useState('hot')
-  const { tokenMode } = farmsProps
 
   const dispatch = useDispatch()
   const { fastRefresh } = useRefresh()
@@ -270,8 +132,8 @@ const Farms: React.FC<FarmsProps> = (farmsProps) => {
 
   const [stackedOnly, setStackedOnly] = useState(false)
 
-  const activeFarms = farmsLP.filter((farm) => !!farm.isTokenOnly === !!tokenMode && farm.multiplier !== '0X')
-  const inactiveFarms = farmsLP.filter((farm) => !!farm.isTokenOnly === !!tokenMode && farm.multiplier === '0X')
+  const activeFarms = farmsLP.filter((farm) => farm.pid !== 0 && farm.multiplier !== '0X')
+  const inactiveFarms = farmsLP.filter((farm) => farm.pid !== 0 && farm.multiplier === '0X')
 
   const stackedOnlyFarms = activeFarms.filter(
     (farm) => farm.userData && new BigNumber(farm.userData.stakedBalance).isGreaterThan(0),
@@ -297,38 +159,53 @@ const Farms: React.FC<FarmsProps> = (farmsProps) => {
   // to retrieve assets prices against USD
   const farmsList = useCallback(
     (farmsToDisplay): FarmWithStakedValue[] => {
-      const cakePriceVsBNB = new BigNumber(farmsLP.find((farm) => farm.pid === KYRIOS_POOL_PID)?.tokenPriceVsQuote || 0)
+      const cakePriceVsBNB = new BigNumber(farmsLP.find((farm) => farm.pid === CAKE_POOL_PID)?.tokenPriceVsQuote || 0)
       let farmsToDisplayWithAPY: FarmWithStakedValue[] = farmsToDisplay.map((farm) => {
         if (!farm.tokenAmount || !farm.lpTotalInQuoteToken) {
           return farm
         }
-        const cakeRewardPerBlock = new BigNumber(farm.cakePerBlock || 1)
-          .times(new BigNumber(farm.poolWeight))
-          .div(new BigNumber(9.85).pow(18))
+        const cakeRewardPerBlock = CAKE_PER_BLOCK.times(farm.poolWeight)
         const cakeRewardPerYear = cakeRewardPerBlock.times(BLOCKS_PER_YEAR)
 
-        let apy = cakePrice.times(cakeRewardPerYear)
+        // cakePriceInQuote * cakeRewardPerYear / lpTotalInQuoteToken
+        let apy = cakePriceVsBNB.times(cakeRewardPerYear).div(farm.lpTotalInQuoteToken)
 
-        let totalValue = new BigNumber(farm.lpTotalInQuoteToken || 0)
+        if (farm.quoteTokenSymbol === QuoteToken.BUSD || farm.quoteTokenSymbol === QuoteToken.UST) {
+          apy = cakePriceVsBNB.times(cakeRewardPerYear).div(farm.lpTotalInQuoteToken).times(bnbPrice)
+        } else if (farm.quoteTokenSymbol === QuoteToken.ETH) {
+          apy = cakePrice.div(ethPriceUsd).times(cakeRewardPerYear).div(farm.lpTotalInQuoteToken)
+        } else if (farm.quoteTokenSymbol === QuoteToken.CAKE) {
+          apy = cakeRewardPerYear.div(farm.lpTotalInQuoteToken)
+        } else if (farm.dual) {
+          const cakeApy =
+            farm && cakePriceVsBNB.times(cakeRewardPerBlock).times(BLOCKS_PER_YEAR).div(farm.lpTotalInQuoteToken)
+          const dualApy =
+            farm.tokenPriceVsQuote &&
+            new BigNumber(farm.tokenPriceVsQuote)
+              .times(farm.dual.rewardPerBlock)
+              .times(BLOCKS_PER_YEAR)
+              .div(farm.lpTotalInQuoteToken)
 
-        if (farm.quoteTokenSymbol === QuoteToken.WETH) {
-          totalValue = totalValue.times(ethPriceUsd)
-        }
-        if (farm.quoteTokenSymbol === QuoteToken.WFTM) {
-          totalValue = totalValue.times(bnbPrice)
-        }
-        if (farm.quoteTokenSymbol === QuoteToken.KYRIOS) {
-          totalValue = totalValue.times(cakePrice)
-        }
-        if (farm.quoteTokenSymbol === QuoteToken.QUICK) {
-          totalValue = totalValue.times(quickPriceUsd)
+          apy = cakeApy && dualApy && cakeApy.plus(dualApy)
         }
 
-        if (totalValue.comparedTo(0) > 0) {
-          apy = apy.div(totalValue)
+        let liquidity = farm.lpTotalInQuoteToken
+
+        if (!farm.lpTotalInQuoteToken) {
+          liquidity = null
+        }
+        if (farm.quoteTokenSymbol === QuoteToken.BNB) {
+          liquidity = bnbPrice.times(farm.lpTotalInQuoteToken)
+        }
+        if (farm.quoteTokenSymbol === QuoteToken.CAKE) {
+          liquidity = cakePrice.times(farm.lpTotalInQuoteToken)
         }
 
-        return { ...farm, apy, liquidity: totalValue }
+        if (farm.quoteTokenSymbol === QuoteToken.ETH) {
+          liquidity = ethPriceUsd.times(farm.lpTotalInQuoteToken)
+        }
+
+        return { ...farm, apy, liquidity }
       })
 
       if (query) {
@@ -343,7 +220,7 @@ const Farms: React.FC<FarmsProps> = (farmsProps) => {
       }
       return farmsToDisplayWithAPY
     },
-    [farmsLP, query, cakePrice, bnbPrice, ethPriceUsd, quickPriceUsd],
+    [bnbPrice, farmsLP, query, cakePrice, ethPriceUsd],
   )
 
   const handleChangeQuery = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -362,16 +239,13 @@ const Farms: React.FC<FarmsProps> = (farmsProps) => {
 
   const rowData = farmsStaked.map((farm) => {
     const { quoteTokenAdresses, quoteTokenSymbol, tokenAddresses } = farm
-    const lpLabel = farm.lpSymbol && farm.lpSymbol.toUpperCase().replace('KyriosToken', 'KyriosToken')
+    const lpLabel = farm.lpSymbol && farm.lpSymbol.toUpperCase().replace('PANCAKE', '')
 
     const row: RowProps = {
       apr: {
-        value:
-          farm.apy &&
-          farm.apy.times(new BigNumber(100)).toNumber().toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          }),
+        value: farm.apy
+          ? Number(`${farm.apy.times(new BigNumber(100)).toNumber().toLocaleString('en-US').slice(0, -1)}`)
+          : null,
         multiplier: farm.multiplier,
         lpLabel,
         quoteTokenAdresses,
@@ -381,22 +255,12 @@ const Farms: React.FC<FarmsProps> = (farmsProps) => {
         originalValue: farm.apy,
       },
       farm: {
-        image: farm.quoteTokenSymbol.split(' ')[0].toLocaleLowerCase(),
-        imagetwo: farm.isTokenOnly
-          ? farm.tokenSymbol.split(' ')[0].toLowerCase()
-          : farm.tokenSymbol.split(' ')[0].toLowerCase(),
+        image: farm.lpSymbol.split(' ')[0].toLocaleLowerCase(),
         label: lpLabel,
         pid: farm.pid,
-        otherExchange: farm.otherExchange,
-        isTokenOnly: farm.isTokenOnly,
-        multiplier: farm.multiplier,
       },
       earned: {
         earnings: farm.userData ? getBalanceNumber(new BigNumber(farm.userData.earnings)) : null,
-        pid: farm.pid,
-      },
-      fee: {
-        fee: farm.depositFeeBP,
         pid: farm.pid,
       },
       liquidity: {
@@ -404,15 +268,6 @@ const Farms: React.FC<FarmsProps> = (farmsProps) => {
       },
       multiplier: {
         multiplier: farm.multiplier,
-      },
-      get: {
-        get: farm,
-        otherExchange: farm.otherExchange,
-        tokenAddresses,
-        isTokenOnly: farm.isTokenOnly,
-        quoteTokenAdresses,
-        quoteTokenSymbol,
-        label: lpLabel,
       },
       details: farm,
     }
@@ -447,13 +302,7 @@ const Farms: React.FC<FarmsProps> = (farmsProps) => {
         sortable: column.sortable,
       }))
 
-      return (
-        <QueueAnim type="alpha" delay={40} duration={500}>
-          <div key="1">
-            <Table data={rowData} columns={columns} />{' '}
-          </div>
-        </QueueAnim>
-      )
+      return <Table data={rowData} columns={columns} />
     }
 
     return (
@@ -466,7 +315,6 @@ const Farms: React.FC<FarmsProps> = (farmsProps) => {
                 farm={farm}
                 bnbPrice={bnbPrice}
                 cakePrice={cakePrice}
-                quickPrice={quickPriceUsd}
                 ethPrice={ethPriceUsd}
                 account={account}
                 removed={false}
@@ -480,7 +328,6 @@ const Farms: React.FC<FarmsProps> = (farmsProps) => {
                 farm={farm}
                 bnbPrice={bnbPrice}
                 cakePrice={cakePrice}
-                quickPrice={quickPriceUsd}
                 ethPrice={ethPriceUsd}
                 account={account}
                 removed
@@ -495,84 +342,65 @@ const Farms: React.FC<FarmsProps> = (farmsProps) => {
   const handleSortOptionChange = (option: OptionProps): void => {
     setSortOption(option.value)
   }
-  const currentBlock = useBlock()
-  const blocklink = `https://ftmscan.com/block/${currentBlock}`
+
   return (
     <>
-      <Menu>
-        <QueueAnim type="alpha" delay={40} duration={500}>
-          <div key="1">
-            {tokenMode ? <HeadDividerLeft /> : <HeadDivider />}
-            <Page>
-              <Flex>
-                <Head>
-                  {tokenMode ? (
-                    <Text textAlign="right" fontSize="30px" ml="10px" color="text" mt="45px">
-                      The Sage King is here to bless your wallet. <br /> Stake single tokens to earn Kyrios totally
-                      worth it.
-                    </Text>
-                  ) : (
-                    <Text textAlign="left" fontSize="30px" ml="10px" color="text" mt="40px">
-                      Enter a different farming experience with Kyrios. <br /> Create and stake LP tokens to earn money.
-                    </Text>
-                  )}
-                </Head>
-              </Flex>
-              <ControlContainer>
-                <ViewControls>
-                  <ToggleWrapper>
-                    <Checkbox checked={stackedOnly} onChange={() => setStackedOnly(!stackedOnly)} scale="sm" />
-                    <Text fontSize="14px" color="#dcdcdd">
-                      {' '}
-                      {TranslateString(1116, 'My Farms')}
-                    </Text>
-                  </ToggleWrapper>
-                </ViewControls>
-                <FilterContainer>
-                  <LabelWrapper style={{ marginLeft: 16 }}>
-                    <SearchInput onChange={handleChangeQuery} value={query} />
-                  </LabelWrapper>
-                </FilterContainer>
-              </ControlContainer>{' '}
-              <CTACards>
-                <FarmedStakingBalance />
-                <EarnAssetCard />
-                <FarmStakingCard />
-              </CTACards>
-              <Text color="#7f7f7f" mt="10px" mb="10px" textAlign="center" fontSize="14px" >
-                REWARDS STARTS IN:
-              </Text>
-              <Timer />
-              <CTACards2>
-                <a href="https://spookyswap.finance/swap?outputCurrency=0xdbf8a44f447cf6fa300fa84c2aac381724b0c6dd">
-                  <img src="/home_banner.png" alt="" />{' '}
-                </a>
-              </CTACards2>
-
-              {renderContent()}
-              <Flex mt="100px" justifyContent="center">
-                <footer>
-                  <a className="nav-item" href="https://discord.gg/6PgtxkpCTE">
-                    <img className="nav-img" src="../images/img/discord.svg" alt="Discord" />
-                  </a>
-                  <a className="nav-item" href="https://twitter.com/KyriosFinance">
-                    <img className="nav-img" src="../images/img/twitter.svg" alt="Twitter" />
-                  </a>
-                  <a className="nav-item" href="https://t.me/kyrios_Finance">
-                    <img className="nav-img" src="../images/img/telegram.svg" alt="Telegram" />
-                  </a>
-                  <a className="nav-item" href="https://github.com/Kyrios-Finance/Contracts">
-                    <img className="nav-img" src="../images/img/github.svg" alt="GitHub" />
-                  </a>
-                  <a className="nav-item" href="https://docs.kyrios.finance/">
-                    <img className="nav-img" src="../images/img/gitbook.svg" alt="GitBook" />
-                  </a>
-                </footer>
-              </Flex>
-            </Page>
-          </div>
-        </QueueAnim>
-      </Menu>
+      <Header>
+        <Heading as="h1" size="xxl" color="secondary" mb="24px">
+          {TranslateString(999, 'Farms')}
+        </Heading>
+        <Heading size="lg" color="text">
+          {TranslateString(999, 'Stake Liquidity Pool (LP) tokens to earn.')}
+        </Heading>
+      </Header>
+      <Page>
+        <ControlContainer>
+          <ViewControls>
+            <ToggleView viewMode={viewMode} onToggle={(mode: ViewMode) => setViewMode(mode)} />
+            <ToggleWrapper>
+              <Toggle checked={stackedOnly} onChange={() => setStackedOnly(!stackedOnly)} scale="sm" />
+              <Text> {TranslateString(1116, 'Staked only')}</Text>
+            </ToggleWrapper>
+            <FarmTabButtons />
+          </ViewControls>
+          <FilterContainer>
+            <LabelWrapper>
+              <Text>SORT BY</Text>
+              <Select
+                options={[
+                  {
+                    label: 'Hot',
+                    value: 'hot',
+                  },
+                  {
+                    label: 'APR',
+                    value: 'apr',
+                  },
+                  {
+                    label: 'Multiplier',
+                    value: 'multiplier',
+                  },
+                  {
+                    label: 'Earned',
+                    value: 'earned',
+                  },
+                  {
+                    label: 'Liquidity',
+                    value: 'liquidity',
+                  },
+                ]}
+                onChange={handleSortOptionChange}
+              />
+            </LabelWrapper>
+            <LabelWrapper style={{ marginLeft: 16 }}>
+              <Text>SEARCH</Text>
+              <SearchInput onChange={handleChangeQuery} value={query} />
+            </LabelWrapper>
+          </FilterContainer>
+        </ControlContainer>
+        {renderContent()}
+        <StyledImage src="/images/3dpan.png" alt="Pancake illustration" width={120} height={103} />
+      </Page>
     </>
   )
 }

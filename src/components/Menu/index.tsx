@@ -5,7 +5,7 @@ import { allLanguages } from 'config/localisation/languageCodes'
 import { LanguageContext } from 'contexts/Localisation/languageContext'
 import useTheme from 'hooks/useTheme'
 import useAuth from 'hooks/useAuth'
-import { usePriceCakeBusd } from 'state/hooks'
+import { usePriceCakeBusd, useProfile } from 'state/hooks'
 import config from './config'
 
 const Menu = (props) => {
@@ -14,6 +14,7 @@ const Menu = (props) => {
   const { selectedLanguage, setSelectedLanguage } = useContext(LanguageContext)
   const { isDark, toggleTheme } = useTheme()
   const cakePriceUsd = usePriceCakeBusd()
+  const { profile } = useProfile()
 
   return (
     <UikitMenu
@@ -27,8 +28,13 @@ const Menu = (props) => {
       setLang={setSelectedLanguage}
       cakePriceUsd={cakePriceUsd.toNumber()}
       links={config}
-      priceLink="https://spookyswap.finance/swap?outputCurrency=0xdbf8a44f447cf6fa300fa84c2aac381724b0c6dd"
-      buyLink="https://spookyswap.finance/swap?outputCurrency=0xdbf8a44f447cf6fa300fa84c2aac381724b0c6dd"
+      profile={{
+        username: profile?.username,
+        image: profile?.nft ? `/images/nfts/${profile.nft?.images.sm}` : undefined,
+        profileLink: '/profile',
+        noProfileLink: '/profile',
+        showPip: !profile?.username,
+      }}
       {...props}
     />
   )

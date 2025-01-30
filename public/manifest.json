@@ -1,12 +1,12 @@
 {
-  "short_name": "Kyrios Finance",
-  "name": "Kyrios",
-  "description": "DeFi with a strong roar.",
+  "short_name": "PancakeSwap",
+  "name": "PancakeSwap",
+  "description": "Farm CAKE with Pancake LP Tokens",
   "icons": [
     {
-            "src": "/android-chrome-96x96.png",
-            "sizes": "96x96",
-            "type": "image/png"
+      "src": "favicon.ico",
+      "type": "image/x-icon",
+      "sizes": "256x256"
     }
   ],
   "start_url": ".",

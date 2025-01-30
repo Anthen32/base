@@ -8,26 +8,19 @@ interface DetailsProps {
 
 const Container = styled.div`
   display: flex;
-  width: 30px;
-  height: 30px;
+  width: 100%;
   justify-content: flex-end;
+  padding-right: 8px;
   color: ${({ theme }) => theme.colors.primary};
-    background-color: #ffffff0f;
-    border-radius: .5rem;
-    padding-top: 0.3rem;
-    padding-bottom: 0.3rem;
-    padding-right: 5px;
 
-}
   ${({ theme }) => theme.mediaQueries.sm} {
-    padding-right: px;
+    padding-right: 0px;
   }
 `
 
 const ArrowIcon = styled(ChevronDownIcon)<{ toggled: boolean }>`
-  transform: ${({ toggled }) => (toggled ? 'rotate(-180deg)' : 'rotate(0)')};
-  transition: all .4s;
-  height: 21px;
+  transform: ${({ toggled }) => (toggled ? 'rotate(180deg)' : 'rotate(0)')};
+  height: 20px;
 `
 
 const Details: React.FC<DetailsProps> = ({ actionPanelToggled }) => {
@@ -36,7 +29,7 @@ const Details: React.FC<DetailsProps> = ({ actionPanelToggled }) => {
 
   return (
     <Container>
-      {!isMobile && ''}
+      {!isMobile && 'Details'}
       <ArrowIcon color="primary" toggled={actionPanelToggled} />
     </Container>
   )

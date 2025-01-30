@@ -7,8 +7,22 @@ const config: MenuEntry[] = [
     href: '/',
   },
   {
+    label: 'Trade',
+    icon: 'TradeIcon',
+    items: [
+      {
+        label: 'Exchange',
+        href: 'https://exchange.pancakeswap.finance',
+      },
+      {
+        label: 'Liquidity',
+        href: 'https://exchange.pancakeswap.finance/#/pool',
+      },
+    ],
+  },
+  {
     label: 'Farms',
-    icon: 'HomeIcon',
+    icon: 'FarmIcon',
     href: '/farms',
   },
   {
@@ -17,24 +31,82 @@ const config: MenuEntry[] = [
     href: '/pools',
   },
   {
-    label: 'Dividends',
-    icon: 'BookIcon',
-    href: '/dividends',
+    label: 'Lottery',
+    icon: 'TicketIcon',
+    href: '/lottery',
   },
   {
-    label: 'Chart',
-    icon: 'BookIcon',
-    href: 'https://kek.tools/t/0xdbf8a44f447cf6fa300fa84c2aac381724b0c6dd',
+    label: 'Collectibles',
+    icon: 'NftIcon',
+    href: '/collectibles',
   },
   {
-    label: 'Audit',
-    icon: 'BookIcon',
-    href: 'https://github.com/solidproof/projects/tree/main/Kyrios%20Finance',  
+    label: 'Teams & Profile',
+    icon: 'GroupsIcon',
+    calloutClass: 'rainbow',
+    items: [
+      {
+        label: 'Leaderboard',
+        href: '/teams',
+      },
+      {
+        label: 'Task Center',
+        href: '/profile/tasks',
+      },
+      {
+        label: 'Your Profile',
+        href: '/profile',
+      },
+    ],
   },
   {
-    label: 'Docs',
-    icon: 'BookIcon',
-    href: 'http://docs.kyrios.finance/',  
+    label: 'Info',
+    icon: 'InfoIcon',
+    items: [
+      {
+        label: 'Overview',
+        href: 'https://pancakeswap.info',
+      },
+      {
+        label: 'Tokens',
+        href: 'https://pancakeswap.info/tokens',
+      },
+      {
+        label: 'Pairs',
+        href: 'https://pancakeswap.info/pairs',
+      },
+      {
+        label: 'Accounts',
+        href: 'https://pancakeswap.info/accounts',
+      },
+    ],
+  },
+  {
+    label: 'IFO',
+    icon: 'IfoIcon',
+    href: '/ifo',
+  },
+  {
+    label: 'More',
+    icon: 'MoreIcon',
+    items: [
+      {
+        label: 'Voting',
+        href: 'https://voting.pancakeswap.finance',
+      },
+      {
+        label: 'Github',
+        href: 'https://github.com/pancakeswap',
+      },
+      {
+        label: 'Docs',
+        href: 'https://docs.pancakeswap.finance',
+      },
+      {
+        label: 'Blog',
+        href: 'https://pancakeswap.medium.com',
+      },
+    ],
   },
 ]
 

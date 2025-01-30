@@ -24,26 +24,27 @@ export interface Ifo {
 }
 
 export enum QuoteToken {
+  'BNB' = 'BNB',
+  'CAKE' = 'CAKE',
   'SYRUP' = 'SYRUP',
-  'USDT' = 'USDT',
-  'USDC' = 'USDC',
-  'WETH' = 'WETH',
+  'BUSD' = 'BUSD',
+  'TWT' = 'TWT',
+  'UST' = 'UST',
   'ETH' = 'ETH',
-  'QUICK' = 'QUICK',
-  'KYRIOS' = 'KYRIOS',
+  'COMP' = 'COMP',
   'SUSHI' = 'SUSHI',
-  'WFTM' = 'WFTM',
+  'TPT' = 'TPT',
 }
 
 export enum PoolCategory {
-  'EARN' = 'EARN',
+  'COMMUNITY' = 'Community',
   'CORE' = 'Core',
   'BINANCE' = 'Binance', // Pools using native BNB behave differently than pools using a token
 }
 
 export interface Address {
-  250: string
-  137?: string
+  97?: string
+  56: string
 }
 
 export interface FarmConfig {
@@ -55,14 +56,7 @@ export interface FarmConfig {
   quoteTokenSymbol: QuoteToken
   quoteTokenAdresses: Address
   multiplier?: string
-  cakePerBlock?: number
-  depositFeeBP?: number
-  harvestInterval?: number
-  isTokenOnly?: boolean
   isCommunity?: boolean
-  otherExchange?: string
-  risk: number
-  decimals: number
   dual?: {
     rewardPerBlock: number
     earnLabel: string
@@ -81,14 +75,11 @@ export interface PoolConfig {
   contractAddress: Address
   poolCategory: PoolCategory
   projectLink: string
-  projectScan: string
   tokenPerBlock: string
   sortOrder?: number
   harvest?: boolean
   isFinished?: boolean
   tokenDecimals: number
-  depositFeeBP?: number
-  harvestInterval?: number
 }
 
 export type Images = {

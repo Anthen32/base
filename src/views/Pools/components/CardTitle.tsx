@@ -5,12 +5,11 @@ interface StyledTitleProps {
 }
 
 const CardTitle = styled.div<StyledTitleProps>`
-  font-weight: 400;
-  font-size: 14px;
-  color: rgb(208 137 63);
-    align-self: center;
-  margin-left:20px;
-  flex:auto;
+  color: ${({ isFinished, theme }) => theme.colors[isFinished ? 'textDisabled' : 'text']};
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 1.1;
+  margin-bottom: 14px;
 `
 
 export default CardTitle

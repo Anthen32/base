@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, Flex } from '@pancakeswap-libs/uikit'
+import { Text } from '@pancakeswap-libs/uikit'
 import { useWeb3React } from '@web3-react/core'
 import useTokenBalance from 'hooks/useTokenBalance'
 import useI18n from 'hooks/useI18n'
@@ -10,7 +10,6 @@ import { BigNumber } from 'bignumber.js'
 import CardValue from './CardValue'
 import CardBusdValue from './CardBusdValue'
 
-
 const CakeWalletBalance = () => {
   const TranslateString = useI18n()
   const cakeBalance = useTokenBalance(getCakeAddress())
@@ -19,20 +18,16 @@ const CakeWalletBalance = () => {
 
   if (!account) {
     return (
-      <Flex>
-      <Text color="textSubtle" style={{ lineHeight: '28px' }}>
+      <Text color="textDisabled" style={{ lineHeight: '54px' }}>
         {TranslateString(298, 'Locked')}
       </Text>
-      </Flex>
     )
   }
 
   return (
     <>
-    <Flex>
-      <CardValue color="#f09553" value={getBalanceNumber(cakeBalance)} decimals={3} fontSize="13px"  lineHeight="2"/>
-      <Text ml="6px" mt="6px" lineHeight="1" color="textSubtle"><CardBusdValue value={busdBalance} /></Text>
-    </Flex>
+      <CardValue value={getBalanceNumber(cakeBalance)} decimals={4} fontSize="24px" lineHeight="36px" />
+      <CardBusdValue value={busdBalance} />
     </>
   )
 }

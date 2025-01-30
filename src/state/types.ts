@@ -14,21 +14,16 @@ export type TranslatableText =
 
 export interface Farm extends FarmConfig {
   tokenAmount?: BigNumber
-  // quoteTokenAmount?: BigNumber
+  quoteTokenAmount?: BigNumber
   lpTotalInQuoteToken?: BigNumber
   tokenPriceVsQuote?: BigNumber
-  poolWeight?: number
-  depositFeeBP?: number
-  cakePerBlock?: number
+  poolWeight?: BigNumber
   userData?: {
     allowance: BigNumber
     tokenBalance: BigNumber
     stakedBalance: BigNumber
     earnings: BigNumber
-  },
-  lpStakedTotal?: BigNumber,
-  tokenDecimals?: number,
-  quoteTokenDecimals?: number,
+  }
 }
 
 export interface Pool extends PoolConfig {

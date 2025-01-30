@@ -2,40 +2,32 @@ import React from 'react'
 import styled from 'styled-components'
 import { Button, Heading, Text, LogoIcon } from '@pancakeswap-libs/uikit'
 import Page from 'components/layout/Page'
-import Menu from 'components/Menu'
+import useI18n from 'hooks/useI18n'
 
 const StyledNotFound = styled.div`
   align-items: center;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 250px);
+  height: calc(100vh - 64px);
   justify-content: center;
-  font-size: 40px;
-  font-weight: 500;
-  line-height: 1.05em;
-  position: relative;
-  text-align: center;
-  background-image: linear-gradient(to left, #ffac49,#d32d29);
-  background-size: 100%;
-  background-repeat: repeat;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
 `
 
 const NotFound = () => {
+  const TranslateString = useI18n()
+
   return (
-    <Menu>
     <Page>
       <StyledNotFound>
-        <Text fontSize='200px'>404</Text>
-        <Text fontSize='80px'>Roar not found.</Text>
-        <Button variant="secondary" as="a" href="/" scale="md">
-        <Text color="#fff" fontSize='16px'>Go to Home</Text>
+        <LogoIcon width="64px" mb="8px" />
+        <Heading size="xxl">404</Heading>
+        <Text mb="16px">{TranslateString(1122, 'Oops, page not found.')}</Text>
+        <img src="/images/404.png" alt="Cheems"/>
+        <Text mb="16px">{TranslateString(1122, 'The web is suffering anxiety.')}</Text>
+        <Button as="a" href="/" scale="sm">
+          {TranslateString(1124, 'Back Home')}
         </Button>
       </StyledNotFound>
     </Page>
-    </Menu>
   )
 }
 

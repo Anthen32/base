@@ -7,9 +7,7 @@ import useI18n from 'hooks/useI18n'
 import Apr, { AprProps } from './Apr'
 import Farm, { FarmProps } from './Farm'
 import Earned, { EarnedProps } from './Earned'
-import Get, { GetProps } from './Get'
 import Details from './Details'
-import Fee, {FeeProps} from './Fee'
 import Multiplier, { MultiplierProps } from './Multiplier'
 import Liquidity, { LiquidityProps } from './Liquidity'
 import ActionPanel from './Actions/ActionPanel'
@@ -23,8 +21,6 @@ export interface RowProps {
   multiplier: MultiplierProps
   liquidity: LiquidityProps
   details: FarmWithStakedValue
-  get: GetProps
-  fee: FeeProps
 }
 
 const cells = {
@@ -34,12 +30,10 @@ const cells = {
   details: Details,
   multiplier: Multiplier,
   liquidity: Liquidity,
-  get: Get,
-  fee: Fee
 }
 
 const CellInner = styled.div`
-  padding: 22px 0px;
+  padding: 24px 0px;
   display: flex;
   width: 100%;
   align-items: center;
@@ -144,7 +138,7 @@ const Row: React.FunctionComponent<RowProps> = (props) => {
           </tr>
           <tr>
             <EarnedMobileCell>
-              <CellLayout label={TranslateString(1072, 'Rewards')}>
+              <CellLayout label={TranslateString(1072, 'Earned')}>
                 <Earned {...props.earned} />
               </CellLayout>
             </EarnedMobileCell>
@@ -171,7 +165,7 @@ const Row: React.FunctionComponent<RowProps> = (props) => {
       {handleRenderRow()}
       {actionPanelToggled && details && (
         <tr>
-          <td colSpan={8}>
+          <td colSpan={6}>
             <ActionPanel {...props} />
           </td>
         </tr>

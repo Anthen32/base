@@ -1,9 +1,8 @@
 import BigNumber from 'bignumber.js'
 import React, { useCallback, useMemo, useState } from 'react'
-import { Button, Flex, Modal, Text, AutoRenewIcon } from '@pancakeswap-libs/uikit'
-import { useToast } from 'state/hooks'
+import { Button, Modal } from '@pancakeswap-libs/uikit'
 import ModalActions from 'components/ModalActions'
-import ModalInput from 'components/ModalInput'
+import TokenInput from '../../../components/TokenInput'
 import useI18n from '../../../hooks/useI18n'
 import { getFullDisplayBalance } from '../../../utils/formatBalance'
 
@@ -29,7 +28,6 @@ const DepositModal: React.FC<DepositModalProps> = ({
     return getFullDisplayBalance(max, stakingTokenDecimals)
   }, [max, stakingTokenDecimals])
 
-  const bal = new BigNumber(fullBalance).toNumber()
   const handleChange = useCallback(
     (e: React.FormEvent<HTMLInputElement>) => {
       setVal(e.currentTarget.value)
@@ -41,36 +39,9 @@ const DepositModal: React.FC<DepositModalProps> = ({
     setVal(fullBalance)
   }, [fullBalance, setVal])
 
-  const { toastSuccess, toastError } = useToast()
-
-  const stakePools = useCallback(async () => {
-    setPendingTx(true)
-    try {
-      await onConfirm(val, stakingTokenDecimals)
-      toastSuccess('Done', `You deposit ${val} ${tokenName}.`)
-    } catch (e) {
-      console.error(e)
-      toastError('Error', e?.message)
-      // TODO: find a way to handle when the user rejects transaction or it fails
-    } finally {
-      setPendingTx(false)
-    }
-  }, [onConfirm, toastSuccess, toastError, tokenName, stakingTokenDecimals, val])
-
   return (
-    <Modal title={`${TranslateString(316, 'STAKE')} ${tokenName}`} onDismiss={onDismiss}>
-      <Flex mt="-20px" justifyContent="center">
-        <Text color="#cf783d" fontSize="12px" mr="4px">
-          {tokenName}
-        </Text>
-        <Text color="#7f7f7f" fontSize="12px">
-          {TranslateString(526, 'BALANCE IN WALLET:')}
-        </Text>
-        <Text ml="5px" fontSize="12px" color="#f09553">
-          {bal.toFixed(3)}
-        </Text>
-      </Flex>
-      <ModalInput
+    <Modal title={`${TranslateString(316, 'Deposit')} ${tokenName} Tokens`} onDismiss={onDismiss}>
+      <TokenInput
         value={val}
         onSelectMax={handleSelectMax}
         onChange={handleChange}
@@ -83,12 +54,15 @@ const DepositModal: React.FC<DepositModalProps> = ({
         </Button>
         <Button
           width="100%"
-          endIcon={pendingTx ? <AutoRenewIcon spin color="currentColor" /> : null}
-          isLoading={pendingTx}
-          onClick={stakePools}
-          disabled={pendingTx || new BigNumber(val).isNaN() || new BigNumber(val).isLessThanOrEqualTo(0)}
+          disabled={pendingTx}
+          onClick={async () => {
+            setPendingTx(true)
+            await onConfirm(val, stakingTokenDecimals)
+            setPendingTx(false)
+            onDismiss()
+          }}
         >
-          {pendingTx ? TranslateString(800, '') : TranslateString(564, 'Stake to Pool')}
+          {pendingTx ? TranslateString(488, 'Pending Confirmation') : TranslateString(464, 'Confirm')}
         </Button>
       </ModalActions>
     </Modal>

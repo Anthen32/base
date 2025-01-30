@@ -26,7 +26,6 @@ export type TableDataTypes = {
   STAKED: string
   DETAILS: string
   LINKS: string
-  GET: string
 }
 
 export const MobileColumnSchema: ColumnsDefTypes[] = [
@@ -42,7 +41,7 @@ export const MobileColumnSchema: ColumnsDefTypes[] = [
     name: 'earned',
     translationId: 1072,
     sortable: true,
-    label: 'Balance',
+    label: 'Earned',
   },
   {
     id: 3,
@@ -50,13 +49,6 @@ export const MobileColumnSchema: ColumnsDefTypes[] = [
     translationId: 736,
     sortable: true,
     label: 'APR',
-  },
-  {
-    id: 8,
-    name: 'fee',
-    translationId: 999,
-    sortable: true,
-    label: 'Fee',
   },
   {
     id: 6,
@@ -80,14 +72,7 @@ export const DesktopColumnSchema: ColumnsDefTypes[] = [
     name: 'earned',
     translationId: 1072,
     sortable: true,
-    label: 'Rewards',
-  },
-    {
-    id: 8,
-    name: 'fee',
-    translationId: 999,
-    sortable: true,
-    label: 'Fee',
+    label: 'Earned',
   },
   {
     id: 3,
@@ -101,17 +86,17 @@ export const DesktopColumnSchema: ColumnsDefTypes[] = [
     name: 'liquidity',
     translationId: 999,
     sortable: true,
-    label: 'TVL',
+    label: 'Liquidity',
   },
   {
     id: 5,
     name: 'multiplier',
     translationId: 999,
     sortable: true,
-    label: 'Weight',
+    label: 'Multiplier',
   },
   {
-    id: 7,
+    id: 6,
     name: 'details',
     translationId: 999,
     sortable: true,

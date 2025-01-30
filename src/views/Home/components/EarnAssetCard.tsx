@@ -1,98 +1,48 @@
-import React, { useCallback, useRef } from 'react'
+import React from 'react'
 import styled from 'styled-components'
-import { Heading, Card, CardBody, Flex, Text, ArrowForwardIcon, Skeleton } from '@pancakeswap-libs/uikit'
+import orderBy from 'lodash/orderBy'
+import { Heading, Card, CardBody, Flex, ArrowForwardIcon } from '@pancakeswap-libs/uikit'
 import { NavLink } from 'react-router-dom'
-import useI18n from 'hooks/useI18n'
-import BigNumber from 'bignumber.js'
-import { QuoteToken } from 'config/constants/types'
-import { useFarms, usePriceBnbBusd } from 'state/hooks'
-import { BLOCKS_PER_YEAR, KYRIOS_PER_BLOCK, KYRIOS_POOL_PID } from 'config'
+import pools from 'config/constants/pools'
+import { Pool } from 'state/types'
 
 const StyledFarmStakingCard = styled(Card)`
+  background: linear-gradient(#53dee9, #7645d9);
   margin-left: auto;
   margin-right: auto;
   width: 100%;
-  border: 0px;
-  background:none;
-
   ${({ theme }) => theme.mediaQueries.lg} {
     margin: 0;
     max-width: none;
   }
 `
-
-const EarnAPYCard = () => {
-  const TranslateString = useI18n()
-  const farmsLP = useFarms()
-  const bnbPrice = usePriceBnbBusd()
-
-  const maxAPY = useRef(Number.MIN_VALUE)
-
-  const getHighestAPY = () => {
-    const activeFarms = farmsLP.filter((farm) => farm.pid !== 0 && farm.multiplier !== '0X')
-
-    calculateAPY(activeFarms)
-
-    return (maxAPY.current * 100).toLocaleString('en-US').slice(0, -5)
-  }
-
-  const calculateAPY = useCallback(
-    (farmsToDisplay) => {
-      const cakePriceVsBNB = new BigNumber(farmsLP.find((farm) => farm.pid === KYRIOS_POOL_PID)?.tokenPriceVsQuote || 0)
-
-      farmsToDisplay.map((farm) => {
-        if (!farm.tokenAmount || !farm.lpTotalInQuoteToken || !farm.lpTotalInQuoteToken) {
-          return farm
-        }
-        const cakeRewardPerBlock = KYRIOS_PER_BLOCK.times(farm.poolWeight)
-        const cakeRewardPerYear = cakeRewardPerBlock.times(BLOCKS_PER_YEAR)
-
-        let apy = cakePriceVsBNB.times(cakeRewardPerYear).div(farm.lpTotalInQuoteToken)
-
-        if (farm.quoteTokenSymbol === QuoteToken.USDC) {
-          apy = cakePriceVsBNB.times(cakeRewardPerYear).div(farm.lpTotalInQuoteToken).times(bnbPrice)
-        } else if (farm.quoteTokenSymbol === QuoteToken.WFTM) {
-          apy = cakeRewardPerYear.div(farm.lpTotalInQuoteToken)
-        } else if (farm.dual) {
-          const cakeApy =
-            farm && cakePriceVsBNB.times(cakeRewardPerBlock).times(BLOCKS_PER_YEAR).div(farm.lpTotalInQuoteToken)
-          const dualApy =
-            farm.tokenPriceVsQuote &&
-            new BigNumber(farm.tokenPriceVsQuote)
-              .times(farm.dual.rewardPerBlock)
-              .times(BLOCKS_PER_YEAR)
-              .div(farm.lpTotalInQuoteToken)
-
-          apy = cakeApy && dualApy && cakeApy.plus(dualApy)
-        }
-
-        if (maxAPY.current < apy.toNumber()) maxAPY.current = apy.toNumber()
-
-        return apy
-      })
-    },
-    [bnbPrice, farmsLP],
-  )
+const CardMidContent = styled(Heading).attrs({ size: 'xl' })`
+  line-height: 44px;
+`
+const EarnAssetCard = () => {
+  const activeNonCakePools = pools.filter((pool) => !pool.isFinished && !pool.tokenName.includes('CAKE'))
+  const latestPools: Pool[] = orderBy(activeNonCakePools, ['sortOrder', 'pid'], ['desc', 'desc']).slice(0, 3)
+  // Always include CAKE
+  const assets = ['CAKE', ...latestPools.map((pool) => pool.tokenName)].join(', ')
 
   return (
     <StyledFarmStakingCard>
       <CardBody>
-       <Text mt="8px" textAlign="center" fontSize="20px" color="text">
-          Earn up to:
-        </Text>
-        <Text  textAlign="center" fontSize="24px" color="#f09553">
-          {getHighestAPY() ? (
-            `${getHighestAPY()}% ${TranslateString(736, 'APR')}`
-          ) : (
-            <Skeleton animation="pulse" variant="rect" height="25px" />
-          )}
-        </Text>
-        <Text textAlign="center" fontSize="20px" color="text">
-            In Farms & Pools.
-          </Text>
+        <Heading color="contrast" size="lg">
+          Earn
+        </Heading>
+        <CardMidContent color="invertedContrast">{assets}</CardMidContent>
+        <Flex justifyContent="space-between">
+          <Heading color="contrast" size="lg">
+            in Pools
+          </Heading>
+          <NavLink exact activeClassName="active" to="/syrup" id="pool-cta">
+            <ArrowForwardIcon mt={30} color="primary" />
+          </NavLink>
+        </Flex>
       </CardBody>
     </StyledFarmStakingCard>
   )
 }
 
-export default EarnAPYCard
+export default EarnAssetCard
